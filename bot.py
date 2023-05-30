@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 async def set_commands(bot: Bot):
     commands = [
         BotCommand(command="/start", description="Начать"),
+        BotCommand(command="/food", description="Выбрать корм")
     ]
     await bot.set_my_commands(commands)
 
@@ -22,11 +23,12 @@ async def set_commands(bot: Bot):
 async def main():
     # Настройка логирования в stdout
     logging.basicConfig(
-        level=logging.INFO,
+        level=logging.DEBUG,
         format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
     )
     logger.error("Starting bot")
 
+    # Подгружаем переменные окружения
     load_dotenv()
 
     # Объявление и инициализация объектов бота и диспетчера
