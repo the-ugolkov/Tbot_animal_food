@@ -1,6 +1,10 @@
+from datetime import datetime
+
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import StatesGroup, State
+
+from pgdb import create_db_connection, insert_data
 
 animals = ['Кошка', 'Собака']
 weight = ['1', '3', '5', '15', '25']
@@ -12,7 +16,18 @@ class RequestFood(StatesGroup):
 
 
 async def start_handler(message: types.Message):
-    keyboard = types.ReplyKeyboardMarkup()
+    conn = await create_db_connection()
+
+    user_id = message.from_user.id
+    username = message.from_user.username
+    first_name = message.from_user.first_name
+    last_name = message.from_user.last_name
+    registration_date = datetime.now()
+
+    await insert_data(conn, user_id, username, first_name, last_name, registration_date)
+    await conn.close()
+
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
     button = "Выбрать корм"
     keyboard.add(button)
     await message.reply("""Здравствуйте! Здесь вы найдете лучший корм для вашего любимца!)\n 

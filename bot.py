@@ -21,7 +21,7 @@ async def set_commands(bot: Bot):
 
 
 async def main():
-    # Настройка логирования в stdout
+    # Настройка логирования
     logging.basicConfig(
         level=logging.DEBUG,
         format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
