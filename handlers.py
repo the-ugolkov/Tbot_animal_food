@@ -27,7 +27,7 @@ async def food_start(message: types.Message, state: FSMContext):
     await state.set_state(RequestFood.waiting_for_pet_choice.state)
 
 
-async def food_chosen(message: types.Message, state: FSMContext):
+async def size_chosen(message: types.Message, state: FSMContext):
     if message.text.capitalize() not in animals:
         await message.answer("Пожалуйста, выберите питомца, используя клавиатуру ниже.")
         return
@@ -37,12 +37,24 @@ async def food_chosen(message: types.Message, state: FSMContext):
     for size in weight:
         keyboard.add(size)
     await state.set_state(RequestFood.waiting_for_weight.state)
-    await message.answer("Выберите нужный вес пачки корма", reply_markup=keyboard)
+    await message.answer("Выберите нужный вес пачки корма (в килограммах)", reply_markup=keyboard)
+
+
+async def product_output(message: types.Message, state: FSMContext):
+    if message.text not in weight:
+        await message.answer("Пожалуйста, выберите вес упаковки, используя клавиатуру ниже.")
+        return
+
+    data = await state.get_data()
+    size = message.text
+    await message.answer(f"Вот все доступные корма для {data['animal']} весом {size} килограм.",
+                         reply_markup=types.ReplyKeyboardRemove())
+    await state.finish()
 
 
 def register_handlers(dp: Dispatcher):
     dp.register_message_handler(start_handler, commands="start", state="*")
     dp.register_message_handler(food_start, regexp="Выбрать корм", state="*")
     dp.register_message_handler(food_start, commands="food", state="*")
-    dp.register_message_handler(food_chosen, state=RequestFood.waiting_for_pet_choice)
-
+    dp.register_message_handler(size_chosen, state=RequestFood.waiting_for_pet_choice)
+    dp.register_message_handler(product_output, state=RequestFood.waiting_for_weight)
