@@ -35,9 +35,6 @@ async def check_user_exists(conn, user_id):
     return exists
 
 
-import asyncpg
-
-
 async def get_product(conn, category_name, size):
     query = """
     SELECT 
