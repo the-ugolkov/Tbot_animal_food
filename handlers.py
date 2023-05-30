@@ -4,15 +4,16 @@ from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import StatesGroup, State
 
-from pgdb import create_db_connection, insert_data
+from pgdb import create_db_connection, insert_data, get_product
+from setting import bot
 
 animals = ['Кошка', 'Собака']
 weight = ['1', '3', '5', '15', '25']
 
 
 class RequestFood(StatesGroup):
-    waiting_for_pet_choice = State()
-    waiting_for_weight = State()
+    animal = State()
+    size = State()
 
 
 async def start_handler(message: types.Message):
@@ -39,7 +40,7 @@ async def food_start(message: types.Message, state: FSMContext):
     for animal in animals:
         keyboard.add(animal)
     await message.answer("Какой у вас питомец?", reply_markup=keyboard)
-    await state.set_state(RequestFood.waiting_for_pet_choice.state)
+    await state.set_state(RequestFood.animal.state)
 
 
 async def size_chosen(message: types.Message, state: FSMContext):
@@ -51,7 +52,7 @@ async def size_chosen(message: types.Message, state: FSMContext):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
     for size in weight:
         keyboard.add(size)
-    await state.set_state(RequestFood.waiting_for_weight.state)
+    await state.set_state(RequestFood.size.state)
     await message.answer("Выберите нужный вес пачки корма (в килограммах)", reply_markup=keyboard)
 
 
@@ -62,8 +63,21 @@ async def product_output(message: types.Message, state: FSMContext):
 
     data = await state.get_data()
     size = message.text
-    await message.answer(f"Вот все доступные корма для {data['animal']} весом {size} килограм.",
-                         reply_markup=types.ReplyKeyboardRemove())
+    chat_id = message.chat.id
+
+    conn = await create_db_connection()
+    products = await get_product(conn, data['animal'], size)
+    await conn.close()
+    for product in products:
+        product_name = product['product_name']
+        size = product['weight']
+        price = product['price']
+        image_url = product['image_url']
+
+        message_text = f"{product_name}\nВес: {size} кг.\nЦена: {price}₽"
+
+        await bot.send_photo(chat_id, photo=image_url, caption=message_text)
+
     await state.finish()
 
 
@@ -71,5 +85,5 @@ def register_handlers(dp: Dispatcher):
     dp.register_message_handler(start_handler, commands="start", state="*")
     dp.register_message_handler(food_start, regexp="Выбрать корм", state="*")
     dp.register_message_handler(food_start, commands="food", state="*")
-    dp.register_message_handler(size_chosen, state=RequestFood.waiting_for_pet_choice)
-    dp.register_message_handler(product_output, state=RequestFood.waiting_for_weight)
+    dp.register_message_handler(size_chosen, state=RequestFood.animal)
+    dp.register_message_handler(product_output, state=RequestFood.size)

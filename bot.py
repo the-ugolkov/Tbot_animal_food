@@ -1,23 +1,11 @@
 import asyncio
 import logging
-import os
-
-from aiogram import Bot, Dispatcher
-from aiogram.types import BotCommand
-from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
 from handlers import register_handlers
-from dotenv import load_dotenv
+
+from setting import bot, dp, set_commands
 
 logger = logging.getLogger(__name__)
-
-
-async def set_commands(bot: Bot):
-    commands = [
-        BotCommand(command="/start", description="Начать"),
-        BotCommand(command="/food", description="Выбрать корм")
-    ]
-    await bot.set_my_commands(commands)
 
 
 async def main():
@@ -27,13 +15,6 @@ async def main():
         format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
     )
     logger.error("Starting bot")
-
-    # Подгружаем переменные окружения
-    load_dotenv()
-
-    # Объявление и инициализация объектов бота и диспетчера
-    bot = Bot(token=os.getenv('TOKEN'))
-    dp = Dispatcher(bot, storage=MemoryStorage())
 
     # Регистрация хэндлеров
     register_handlers(dp)
