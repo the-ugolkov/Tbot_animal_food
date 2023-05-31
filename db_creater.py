@@ -86,20 +86,6 @@ VALUES (
   999
 );
 
-INSERT INTO Prices (product_id, package_size_id, price)
-VALUES (
-  (SELECT product_id FROM Products WHERE name = 'Purina ONE'),
-  (SELECT package_size_id FROM PackageSizes WHERE weight = '15'),
-  2699
-);
-
-INSERT INTO Prices (product_id, package_size_id, price)
-VALUES (
-  (SELECT product_id FROM Products WHERE name = 'Purina ONE'),
-  (SELECT package_size_id FROM PackageSizes WHERE weight = '25'),
-  3999
-);
-
 INSERT INTO Products (category_id, name, image_url)
 VALUES ((SELECT category_id FROM Categories WHERE name = 'Собака'), 'Chappi', 'https://main-cdn.sbermegamarket.ru/big1/hlr-system/-20/513/448/141/111/103/8/100001276610b0.jpg');
 
@@ -115,20 +101,6 @@ VALUES (
   (SELECT product_id FROM Products WHERE name = 'Chappi'),
   (SELECT package_size_id FROM PackageSizes WHERE weight = '3'),
   750
-);
-
-INSERT INTO Prices (product_id, package_size_id, price)
-VALUES (
-  (SELECT product_id FROM Products WHERE name = 'Chappi'),
-  (SELECT package_size_id FROM PackageSizes WHERE weight = '5'),
-  1099
-);
-
-INSERT INTO Prices (product_id, package_size_id, price)
-VALUES (
-  (SELECT product_id FROM Products WHERE name = 'Chappi'),
-  (SELECT package_size_id FROM PackageSizes WHERE weight = '15'),
-  2999
 );
 
 INSERT INTO Prices (product_id, package_size_id, price)
