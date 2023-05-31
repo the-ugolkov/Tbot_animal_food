@@ -17,6 +17,7 @@ class RequestFood(StatesGroup):
 
 
 async def start_handler(message: types.Message):
+    # Вносим данные о пользователе в бд
     conn = await create_db_connection()
 
     user_id = message.from_user.id
@@ -40,6 +41,7 @@ async def food_start(message: types.Message, state: FSMContext):
     for animal in animals:
         keyboard.add(animal)
     await message.answer("Какой у вас питомец?", reply_markup=keyboard)
+    # Обновляем состояние
     await state.set_state(RequestFood.animal.state)
 
 
@@ -47,11 +49,13 @@ async def size_chosen(message: types.Message, state: FSMContext):
     if message.text.capitalize() not in animals:
         await message.answer("Пожалуйста, выберите питомца, используя клавиатуру ниже.")
         return
+    # Обновляем словарь данных состояния
     await state.update_data(animal=message.text.capitalize())
 
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
     for size in weight:
         keyboard.add(size)
+    # Обновляем состояние
     await state.set_state(RequestFood.size.state)
     await message.answer("Выберите нужный вес пачки корма (в килограммах)", reply_markup=keyboard)
 
@@ -65,19 +69,27 @@ async def product_output(message: types.Message, state: FSMContext):
     size = message.text
     chat_id = message.chat.id
 
+    # Получаем список доступных товаров по разпросу
     conn = await create_db_connection()
     products = await get_product(conn, data['animal'], size)
     await conn.close()
-    for product in products:
-        product_name = product['product_name']
-        size = product['weight']
-        price = product['price']
-        image_url = product['image_url']
 
-        message_text = f"{product_name}\nВес: {size} кг.\nЦена: {price}₽"
+    # Проверка наличия результатов по запросу
+    if not len(products):
+        await message.answer("К сожалению, на данный момент по вашему запросу нет достуных вариантов.")
+    elif len(products):
+        await message.answer("Вот что у нас есть для вас:")
 
-        await bot.send_photo(chat_id, photo=image_url, caption=message_text)
+        for product in products:
+            product_name = product['product_name']
+            size = product['weight']
+            price = product['price']
+            image_url = product['image_url']
 
+            message_text = f"{product_name}\nВес: {size} кг.\nЦена: {price}₽"
+
+            await bot.send_photo(chat_id, photo=image_url, caption=message_text)
+    # Поставка состояния в исходное положение
     await state.finish()
 
 
