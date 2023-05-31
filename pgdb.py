@@ -1,15 +1,18 @@
-import asyncpg
+import os
 
-from setting import DB_PORT, DB_HOST, DB_NAME, DB_PASS, DB_LOGIN
+import asyncpg
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 async def create_db_connection():
     conn = await asyncpg.connect(
-        user=DB_LOGIN,
-        password=DB_PASS,
-        database=DB_NAME,
-        host=DB_HOST,
-        port=DB_PORT
+        user=os.getenv('DB_LOGIN'),
+        password=os.getenv('DB_PASS'),
+        database=os.getenv('DB_NAME'),
+        host=os.getenv('DB_HOST'),
+        port=os.getenv('DB_PORT')
     )
     return conn
 
