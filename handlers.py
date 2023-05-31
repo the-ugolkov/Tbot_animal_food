@@ -34,13 +34,12 @@ async def start_handler(message: types.Message):
     button = "Выбрать корм"
     keyboard.add(button)
     await message.reply("""Здравствуйте! Здесь вы найдете лучший корм для вашего любимца!)\n 
-Если у вас есть вопросы или предложения - напишите нашему менеджеру!\nКонтакты:""", reply_markup=keyboard)
+Если у вас есть вопросы или предложения - напишите нашему менеджеру!\nКонтакты: @the_ugolkov""", reply_markup=keyboard)
 
 
 async def food_start(message: types.Message, state: FSMContext):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-    for animal in animals:
-        keyboard.add(animal)
+    keyboard.add(*animals)
     await message.answer("Какой у вас питомец?", reply_markup=keyboard)
     # Обновляем состояние
     await state.set_state(RequestFood.animal.state)
@@ -54,11 +53,11 @@ async def size_chosen(message: types.Message, state: FSMContext):
     await state.update_data(animal=message.text.capitalize())
 
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-    for size in weight:
-        keyboard.add(size)
+    keyboard.add(*weight)
+
+    await message.answer("Выберите нужный вес пачки корма (в килограммах)", reply_markup=keyboard)
     # Обновляем состояние
     await state.set_state(RequestFood.size.state)
-    await message.answer("Выберите нужный вес пачки корма (в килограммах)", reply_markup=keyboard)
 
 
 async def product_output(message: types.Message, state: FSMContext):
