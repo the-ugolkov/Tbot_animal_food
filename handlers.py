@@ -4,7 +4,7 @@ from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import StatesGroup, State
 
-from pgdb import create_db_connection, insert_data, get_product
+from pgdb import create_db_connection, insert_data_user, get_product
 from setting import bot
 
 animals = ['Кошка', 'Собака']
@@ -25,7 +25,7 @@ async def start_handler(message: types.Message):
     last_name = message.from_user.last_name
     registration_date = datetime.now()
 
-    await insert_data(conn, user_id, username, first_name, last_name, registration_date)
+    await insert_data_user(conn, user_id, username, first_name, last_name, registration_date)
     await conn.close()
 
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)

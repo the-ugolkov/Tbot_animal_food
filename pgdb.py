@@ -1,23 +1,20 @@
-import os
-
 import asyncpg
-from dotenv import load_dotenv
 
-load_dotenv()
+from setting import DB_PORT, DB_HOST, DB_NAME, DB_PASS, DB_LOGIN
 
 
 async def create_db_connection():
     conn = await asyncpg.connect(
-        user=os.getenv('DB_LOGIN'),
-        password=os.getenv('DB_PASS'),
-        database=os.getenv('DB_NAME'),
-        host=os.getenv('DB_HOST'),
-        port=os.getenv('DB_PORT')
+        user=DB_LOGIN,
+        password=DB_PASS,
+        database=DB_NAME,
+        host=DB_HOST,
+        port=DB_PORT
     )
     return conn
 
 
-async def insert_data(conn, user_id, username, first_name, last_name, registration_date):
+async def insert_data_user(conn, user_id, username, first_name, last_name, registration_date):
     exists = await check_user_exists(conn, user_id)
     if not exists:
         insert_query = """

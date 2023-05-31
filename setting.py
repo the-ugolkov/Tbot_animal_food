@@ -12,8 +12,15 @@ load_dotenv()
 bot = Bot(token=os.getenv('TOKEN'))
 dp = Dispatcher(bot, storage=MemoryStorage())
 
+# Объявляем настройки базы данных
+# (так же они есть в .env, но вынес сюда для простоты запуска бота с минимальными настройками перед сборкой контейнеров)
+DB_HOST = 'localhost'
+DB_PORT = '5433'
+DB_LOGIN = 'postgres'
+DB_PASS = 'postgres'
+DB_NAME = 'postgres'
 
-# Устанавливаем команды для меню
+# Объявляем команды для меню
 async def set_commands(bot: Bot):
     commands = [
         BotCommand(command="/start", description="Начать"),
