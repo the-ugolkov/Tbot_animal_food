@@ -1,14 +1,15 @@
+import asyncio
 from datetime import datetime
 
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import StatesGroup, State
 
-from pgdb import create_db_connection, insert_data_user, get_product
+from pgdb import create_db_connection, insert_data_user, get_product, get_categories, get_size
 from setting import bot
 
-animals = ['Кошка', 'Собака']
-weight = ['1', '3', '5', '15', '25']
+animals = asyncio.run(get_categories())
+weight = asyncio.run(get_size())
 
 
 class RequestFood(StatesGroup):

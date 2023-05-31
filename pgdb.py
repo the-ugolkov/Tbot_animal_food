@@ -57,3 +57,21 @@ async def get_product(conn, category_name, size):
     except asyncpg.exceptions.PostgresError as e:
         print(f"При выполнении запроса произошла ошибка: {e}")
         return []
+
+
+async def get_categories():
+    conn = await create_db_connection()
+    query = "SELECT name FROM Categories"
+
+    results = await conn.fetch(query)
+    cat_list = [result['name'] for result in results]
+    return cat_list
+
+
+async def get_size():
+    conn = await create_db_connection()
+    query = "SELECT weight FROM PackageSizes"
+
+    results = await conn.fetch(query)
+    size_list = [result['weight'] for result in results]
+    return size_list
