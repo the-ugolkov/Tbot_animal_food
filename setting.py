@@ -12,6 +12,7 @@ load_dotenv()
 bot = Bot(token=os.getenv('TOKEN'))
 dp = Dispatcher(bot, storage=MemoryStorage())
 
+
 # Объявляем команды для меню
 async def set_commands(bot: Bot):
     commands = [
